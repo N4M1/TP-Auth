@@ -32,7 +32,8 @@ exports.add = async (req, res, next) => {
         name     : temp.name,
         firstname: temp.firstname,
         email    : temp.email,
-        password : temp.password
+        password : temp.password,
+        role     : temp.role
     } = req.body);
 
     Object.keys(temp).forEach((key) => (temp[key] == null) && delete temp[key]);
@@ -54,7 +55,8 @@ exports.update = async (req, res, next) => {
         name     : temp.name,
         firstname: temp.firstname,
         email    : temp.email,
-        password : temp.password
+        password : temp.password,
+        role     : temp.role
     } = req.body);
 
     try {

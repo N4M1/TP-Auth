@@ -22,7 +22,12 @@ const User = new Schema({
     password: {
         type: String,
         trim: true,
-    }
+    },
+    role: {
+        type    : String,
+        trim    : true,
+        required: [true, 'Le role est obligatoire']
+    },
 }, {
     timestamps: true // ajoute 2 champs au document createdAt et updatedAt
 });

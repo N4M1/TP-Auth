@@ -1,10 +1,13 @@
 ## Instructions
-Install all dependencies:
+MongoDB est nécessaire pour faire fonctionner le projet.
+Installer MongoDB : https://www.mongodb.com/try/download/community
+
+Installer les dépendences :
 ```
 npm install
 ```
 
-Run:
+Lancer le serveur :
 ```
 npm start
 ```

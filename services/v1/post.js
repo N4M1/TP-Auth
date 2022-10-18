@@ -1,4 +1,6 @@
-const Post = require('../../models/post');
+const Post       = require('../../models/post');
+const jwt        = require('jsonwebtoken');
+const SECRET_KEY = process.env.SECRET_KEY;
 
 /* Toutes les réponses sont renvoyées en JSON */
 
@@ -7,9 +9,29 @@ exports.getById = async (req, res, next) => {
     const { id } = req.params;
 
     try {
+        let token = req.headers['x-access-token'] || req.headers['authorization'];
+        if (!!token && token.startsWith('Bearer ')) {
+            token = token.slice(7, token.length);
+        }
+        
         let post = await Post.findById(id);
+        let user = null
+        
+        jwt.verify(token, SECRET_KEY, (err, decoded) => {
+            if (err) {
+                return
+            } else {
+                user = decoded.user;
+            }
+        });
 
-        // TODO: restreindre l'accès au post en fonction de l'user
+        if (!user) {
+            return res.status(401).json('unauthorized');
+        }
+
+        if (user.role !== 'admin' && user._id !== post.user_id) {
+            return res.status(401).json('unauthorized');
+        }
 
         if (post) {
             return res.status(200).json(post);
@@ -22,6 +44,8 @@ exports.getById = async (req, res, next) => {
 }
 
 // ajoute un Post et le renvoie en JSON
+// si l'utilisateur n'est pas celui qui a créé le post ou s'il n'est pas admin, on lui renvoie une erreur 401 unauthorized
+// si l'utilisateur est admin ou s'il a créé le post, on lui renvoie le post en JSON
 exports.add = async (req, res, next) => {
     const temp = {};
 
@@ -42,6 +66,8 @@ exports.add = async (req, res, next) => {
 }
 
 // met à jour un Post en fonction de son ID et le renvoie en JSON
+// si l'utilisateur n'est pas celui qui a créé le post ou s'il n'est pas admin, on lui renvoie une erreur 401 unauthorized
+// si l'utilisateur est admin ou s'il a créé le post, on lui renvoie le post en JSON
 exports.update = async (req, res, next) => {
     const temp   = {};
 
@@ -51,9 +77,29 @@ exports.update = async (req, res, next) => {
     } = req.body);
 
     try {
+        let token = req.headers['x-access-token'] || req.headers['authorization'];
+        if (!!token && token.startsWith('Bearer ')) {
+            token = token.slice(7, token.length);
+        }
+        
         let post = await Post.findById(id);
+        let user = null
+        
+        jwt.verify(token, SECRET_KEY, (err, decoded) => {
+            if (err) {
+                return
+            } else {
+                user = decoded.user;
+            }
+        });
 
-        // TODO: restreindre l'accès au post en fonction de l'user
+        if (!user) {
+            return res.status(401).json('unauthorized');
+        }
+
+        if (user.role !== 'admin' && user._id !== post.user_id) {
+            return res.status(401).json('unauthorized');
+        }
 
         if (post) {       
             Object.keys(temp).forEach((key) => {
